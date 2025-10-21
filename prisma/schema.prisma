@@ -1,0 +1,440 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User Management
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  password      String?
+  image         String?
+  emailVerified DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relationships
+  accounts      Account[]
+  sessions      Session[]
+  memberships   BusinessMember[]
+  notifications Notification[]
+  activities    ActivityLog[]
+  
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verificationtokens")
+}
+
+// Business Management
+model Business {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  website     String?
+  phone       String?
+  email       String?
+  address     String?
+  city        String?
+  state       String?
+  country     String?
+  postalCode  String?
+  timezone    String   @default("UTC")
+  
+  // Business settings
+  logo        String?
+  primaryColor String? @default("#2A5FFF")
+  tonePreset  String   @default("friendly") // friendly, formal, witty, empathetic
+  
+  // Status
+  isActive    Boolean  @default(true)
+  isVerified  Boolean  @default(false)
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relationships
+  memberships BusinessMember[]
+  locations   BusinessLocation[]
+  reviews     Review[]
+  integrations Integration[]
+  subscription Subscription?
+  notifications Notification[]
+  activities  ActivityLog[]
+  
+  @@map("businesses")
+}
+
+model BusinessLocation {
+  id          String   @id @default(cuid())
+  businessId  String
+  name        String
+  address     String?
+  city        String?
+  state       String?
+  country     String?
+  postalCode  String?
+  phone       String?
+  email       String?
+  
+  // Platform IDs
+  googlePlaceId String?
+  facebookPageId String?
+  
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  business    Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  reviews     Review[]
+  
+  @@map("business_locations")
+}
+
+model BusinessMember {
+  id          String           @id @default(cuid())
+  userId      String
+  businessId  String
+  role        BusinessRole     @default(MEMBER)
+  permissions String[]         @default([])
+  
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  business    Business         @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, businessId])
+  @@map("business_members")
+}
+
+enum BusinessRole {
+  OWNER
+  ADMIN
+  MANAGER
+  MEMBER
+}
+
+// Review Management
+model Review {
+  id          String        @id @default(cuid())
+  businessId  String
+  locationId  String?
+  
+  // Review data
+  platform    ReviewPlatform
+  reviewId    String        @unique
+  authorName  String
+  authorPhoto String?
+  rating      Int           // 1-5 stars
+  title       String?
+  content     String        @db.Text
+  reviewUrl   String?
+  
+  // Timestamps
+  publishedAt DateTime
+  respondedAt DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  
+  // Analysis
+  sentiment   Sentiment     @default(NEUTRAL)
+  keywords    String[]      @default([])
+  category    String?
+  
+  // Response
+  aiResponse  String?       @db.Text
+  response    String?       @db.Text
+  responseBy  String?
+  
+  // Status
+  status      ReviewStatus  @default(PENDING)
+  isFlagged   Boolean       @default(false)
+  
+  // Relationships
+  business    Business      @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  location    BusinessLocation? @relation(fields: [locationId], references: [id])
+  activities  ActivityLog[]
+  
+  @@map("reviews")
+}
+
+enum ReviewPlatform {
+  GOOGLE
+  FACEBOOK
+  INSTAGRAM
+  YELP
+  TRIPADVISOR
+  OTHER
+}
+
+enum Sentiment {
+  POSITIVE
+  NEUTRAL
+  NEGATIVE
+}
+
+enum ReviewStatus {
+  PENDING
+  RESPONDED
+  FLAGGED
+  ARCHIVED
+}
+
+// Integration Management
+model Integration {
+  id           String           @id @default(cuid())
+  businessId   String
+  platform     PlatformType
+  
+  // Connection details
+  isConnected  Boolean          @default(false)
+  credentials  Json?            // Encrypted credentials
+  settings     Json?            // Platform-specific settings
+  
+  // Sync status
+  lastSync     DateTime?
+  syncStatus   SyncStatus       @default(PENDING)
+  errorMessage String?
+  
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  
+  business     Business         @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  
+  @@unique([businessId, platform])
+  @@map("integrations")
+}
+
+enum PlatformType {
+  GOOGLE_BUSINESS
+  FACEBOOK
+  INSTAGRAM
+  WHATSAPP
+  EMAIL
+}
+
+enum SyncStatus {
+  PENDING
+  SYNCING
+  SYNCED
+  ERROR
+}
+
+// Subscription & Billing
+model Subscription {
+  id                 String           @id @default(cuid())
+  businessId         String           @unique
+  
+  // Stripe details
+  stripeCustomerId   String?          @unique
+  stripeSubscriptionId String?        @unique
+  stripePriceId      String?
+  
+  // Plan details
+  plan               SubscriptionPlan @default(FREE)
+  status             SubscriptionStatus @default(ACTIVE)
+  
+  // Usage tracking
+  reviewsThisMonth   Int              @default(0)
+  maxReviewsPerMonth Int              @default(20)
+  
+  // Billing
+  currentPeriodStart DateTime?
+  currentPeriodEnd   DateTime?
+  cancelAtPeriodEnd  Boolean          @default(false)
+  
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  
+  business           Business         @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  
+  @@map("subscriptions")
+}
+
+enum SubscriptionPlan {
+  FREE
+  PRO
+  BUSINESS
+  AGENCY
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELED
+  PAST_DUE
+  UNPAID
+  INCOMPLETE
+}
+
+// Notifications
+model Notification {
+  id          String           @id @default(cuid())
+  userId      String?
+  businessId  String?
+  
+  type        NotificationType
+  title       String
+  message     String           @db.Text
+  data        Json?
+  
+  isRead      Boolean          @default(false)
+  
+  createdAt   DateTime         @default(now())
+  
+  user        User?            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  business    Business?        @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  
+  @@map("notifications")
+}
+
+enum NotificationType {
+  NEW_REVIEW
+  LOW_RATING
+  AI_RESPONSE
+  BILLING
+  SYSTEM
+}
+
+// Activity Logging
+model ActivityLog {
+  id          String       @id @default(cuid())
+  userId      String?
+  businessId  String?
+  reviewId    String?
+  
+  action      ActivityType
+  description String       @db.Text
+  metadata    Json?
+  
+  ipAddress   String?
+  userAgent   String?
+  
+  createdAt   DateTime     @default(now())
+  
+  user        User?        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  business    Business?    @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  review      Review?      @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  
+  @@map("activity_logs")
+}
+
+enum ActivityType {
+  REVIEW_IMPORTED
+  REVIEW_RESPONDED
+  REVIEW_FLAGGED
+  AI_RESPONSE_GENERATED
+  AI_RESPONSE_APPROVED
+  AI_RESPONSE_REJECTED
+  SETTINGS_UPDATED
+  INTEGRATION_CONNECTED
+  INTEGRATION_DISCONNECTED
+  USER_INVITED
+  SUBSCRIPTION_CHANGED
+  LOGIN
+  LOGOUT
+}
+
+// Analytics and Insights
+model AnalyticsSnapshot {
+  id          String   @id @default(cuid())
+  businessId  String
+  
+  date        DateTime
+  period      AnalyticsPeriod
+  
+  // Metrics
+  totalReviews Int     @default(0)
+  averageRating Float  @default(0)
+  
+  sentimentPositive Int @default(0)
+  sentimentNeutral  Int @default(0)
+  sentimentNegative Int @default(0)
+  
+  responseRate Float   @default(0)
+  averageResponseTime Int? // in minutes
+  
+  // Keywords
+  topKeywords Json?    // Array of {keyword, count, sentiment}
+  
+  // Platform distribution
+  platformDistribution Json? // Object with platform names as keys
+  
+  createdAt   DateTime @default(now())
+  
+  business    Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  
+  @@unique([businessId, date, period])
+  @@map("analytics_snapshots")
+}
+
+enum AnalyticsPeriod {
+  DAILY
+  WEEKLY
+  MONTHLY
+}
+
+// AI Training Data
+model AIResponseTraining {
+  id          String   @id @default(cuid())
+  businessId  String
+  
+  reviewText  String   @db.Text
+  reviewRating Int
+  responseText String  @db.Text
+  tone        String
+  
+  // Training status
+  isApproved  Boolean  @default(false)
+  isUsed      Boolean  @default(false)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  business    Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  
+  @@map("ai_response_training")
+}
