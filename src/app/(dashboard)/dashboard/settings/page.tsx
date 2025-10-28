@@ -20,11 +20,13 @@ import {
   MessageSquare
 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
+import { FileUpload } from '@/components/ui/file-upload'
 
 export default function SettingsPage() {
   const { toast } = useToast()
   const [loading, setLoading] = useState(false)
   const [activeTab, setActiveTab] = useState('general')
+  const [logoUrl, setLogoUrl] = useState('')
 
   const handleSave = async (section: string) => {
     setLoading(true)
@@ -74,6 +76,16 @@ export default function SettingsPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label>Business Logo</Label>
+                <FileUpload
+                  endpoint="businessLogo"
+                  value={logoUrl}
+                  onChange={(url) => {
+                    setLogoUrl(url);
+                  }}
+                />
+              </div>
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="businessName">Business Name</Label>
