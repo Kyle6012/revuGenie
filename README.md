@@ -81,38 +81,65 @@ revugenie/
 ### Environment Variables
 ```env
 # Database
-DB_USER="avnadmin"
+DB_USER="<username>"
 DB_PASSWORD="<PASSWORD>"
 DB_HOST="<HOST>"
 DB_PORT="<PORT>"
-DB_NAME="revuGenie"
+DB_NAME="name"
 DB_SSL_CA="<SSL_CA>"
 
 # Authentication
-NEXTAUTH_SECRET="your-secret"
+NEXTAUTH_SECRET="your-nextauth-secret-here"
 NEXTAUTH_URL="http://localhost:3000"
-GOOGLE_CLIENT_ID="..."
-GOOGLE_CLIENT_SECRET="..."
 
-# Payments
+# Google OAuth
+GOOGLE_CLIENT_ID="your-google-client-id"
+GOOGLE_CLIENT_SECRET="your-google-client-secret"
+
+# Google My Business API
+GOOGLE_API_KEY="your-google-api-key"
+
+# Stripe
 STRIPE_PUBLISHABLE_KEY="pk_test_..."
 STRIPE_SECRET_KEY="sk_test_..."
 STRIPE_WEBHOOK_SECRET="whsec_..."
 
-# AI
-OPENAI_API_KEY="sk-..."
+# AI Service
+AI_PROVIDER="openai" # openai, claude, or together
+OPENAI_API_KEY="sk-your-openai-api-key"
+ANTHROPIC_API_KEY="sk-your-anthropic-api-key"
+TOGETHER_API_KEY="your-together-api-key"
 
-# Notifications
-TWILIO_ACCOUNT_SID="..."
-TWILIO_AUTH_TOKEN="..."
-TWILIO_PHONE_NUMBER="..."
+# Twilio (WhatsApp)
+TWILIO_ACCOUNT_SID="your-twilio-account-sid"
+TWILIO_AUTH_TOKEN="your-twilio-auth-token"
+TWILIO_PHONE_NUMBER="your-twilio-phone-number"
 
-# Storage
-SUPABASE_URL="..."
-SUPABASE_ANON_KEY="..."
+# Email (Nodemailer)
+EMAIL_HOST="smtp.gmail.com"
+EMAIL_PORT="587"
+EMAIL_USER="your-email@gmail.com"
+EMAIL_PASS="your-app-password"
 
 # Redis
 REDIS_URL="redis://localhost:6379"
+
+# ImageKit (Storage)
+IMAGEKIT_PUBLIC_KEY="your-public-key"
+IMAGEKIT_PRIVATE_KEY="your-private-key"
+IMAGEKIT_URL_ENDPOINT="your-url-endpoint"
+
+# App Settings
+APP_URL="http://localhost:3000"
+APP_NAME="RevuGenie"
+APP_DESCRIPTION="AI-Powered Review Management Platform"
+
+# Feature Flags
+ENABLE_AI_RESPONSES="true"
+ENABLE_WHATSAPP_NOTIFICATIONS="true"
+ENABLE_EMAIL_NOTIFICATIONS="true"
+ENABLE_ANALYTICS="true"
+ENABLE_ADMIN_PANEL="true"
 ```
 
 ## Deployment
