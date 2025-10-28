@@ -1,0 +1,106 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_DB: revugenie-test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres123
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js 18
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        env:
+          DB_USER: postgres
+          DB_PASSWORD: postgres123
+          DB_HOST: localhost
+          DB_PORT: 5433
+          DB_NAME: revugenie-test
+          DB_SSL_CA: ${{ secrets.AIVEN_CA_CERT }}
+        run: npm run test
+
+  build:
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js 18
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build project
+        run: npm run build
+
+      - name: Lint code
+        run: npm run lint
+
+      - name: Run database migrations
+        env:
+          DB_USER: ${{ secrets.AIVEN_USER }}
+          DB_PASSWORD: ${{ secrets.AIVEN_PASSWORD }}
+          DB_HOST: ${{ secrets.AIVEN_HOST }}
+          DB_PORT: ${{ secrets.AIVEN_PORT }}
+          DB_NAME: ${{ secrets.AIVEN_DB_NAME }}
+          DB_SSL_CA: ${{ secrets.AIVEN_CA_CERT }}
+        run: npx prisma migrate deploy
+
+      - name: Security scan
+        run: npm audit --audit-level=high
+
+      - name: Deploy to Production
+        env:
+          AIVEN_USER: ${{ secrets.AIVEN_USER }}
+          AIVEN_PASSWORD: ${{ secrets.AIVEN_PASSWORD }}
+          AIVEN_HOST: ${{ secrets.AIVEN_HOST }}
+          AIVEN_PORT: ${{ secrets.AIVEN_PORT }}
+          AIVEN_DB_NAME: ${{ secrets.AIVEN_DB_NAME }}
+          AIVEN_CA_CERT: ${{ secrets.AIVEN_CA_CERT }}
+          IMAGEKIT_PUBLIC_KEY: ${{ secrets.IMAGEKIT_PUBLIC_KEY }}
+          IMAGEKIT_PRIVATE_KEY: ${{ secrets.IMAGEKIT_PRIVATE_KEY }}
+          IMAGEKIT_URL_ENDPOINT: ${{ secrets.IMAGEKIT_URL_ENDPOINT }}
+          AI_PROVIDER: ${{ secrets.AI_PROVIDER }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          TOGETHER_API_KEY: ${{ secrets.TOGETHER_API_KEY }}
+        run: |
+          echo "Simulating deployment to production..."
+          # In a real-world scenario, this would be a script that deploys to a hosting provider like Vercel or AWS.
+          # For example: ./scripts/deploy-vercel.sh
+          #
+          # Rollback Strategy:
+          # In case of a failed deployment, the most recent stable version
+          # of the application will be redeployed. This can be achieved by
+          # re-running this workflow with the commit hash of the last
+          # successful deployment.

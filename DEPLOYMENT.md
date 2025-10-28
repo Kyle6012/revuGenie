@@ -18,7 +18,12 @@ Create a `.env` file in the root directory with the following variables:
 
 ```env
 # Database
-DATABASE_URL="postgresql://username:password@localhost:5432/revugenie?schema=public"
+DB_USER="avnadmin"
+DB_PASSWORD="<PASSWORD>"
+DB_HOST="<HOST>"
+DB_PORT="<PORT>"
+DB_NAME="revuGenie"
+DB_SSL_CA="<SSL_CA>"
 
 # Authentication
 NEXTAUTH_SECRET="your-nextauth-secret-here"
@@ -34,12 +39,16 @@ STRIPE_PRO_PRICE_ID="price_..."
 STRIPE_BUSINESS_PRICE_ID="price_..."
 STRIPE_AGENCY_PRICE_ID="price_..."
 
-# AI
+# AI Service
+AI_PROVIDER="openai" # openai, claude, or together
 OPENAI_API_KEY="sk-your-openai-api-key"
+ANTHROPIC_API_KEY="sk-your-anthropic-api-key"
+TOGETHER_API_KEY="your-together-api-key"
 
 # Storage
-SUPABASE_URL="https://your-project.supabase.co"
-SUPABASE_ANON_KEY="your-supabase-anon-key"
+IMAGEKIT_PUBLIC_KEY="your-public-key"
+IMAGEKIT_PRIVATE_KEY="your-private-key"
+IMAGEKIT_URL_ENDPOINT="your-url-endpoint"
 
 # Redis
 REDIS_URL="redis://localhost:6379"

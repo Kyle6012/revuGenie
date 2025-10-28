@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
@@ -10,7 +11,8 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Loader2, Mail, Lock, Google, Github } from 'lucide-react'
+import { Loader2, Mail, Lock, Github } from 'lucide-react'
+import { FcGoogle } from 'react-icons/fc'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -144,7 +146,7 @@ export default function LoginPage() {
                 onClick={handleGoogleSignIn}
                 disabled={loading}
               >
-                <Google className="mr-2 h-4 w-4" />
+                <FcGoogle className="mr-2 h-4 w-4" />
                 Google
               </Button>
               

@@ -104,6 +104,8 @@ model Business {
   subscription Subscription?
   notifications Notification[]
   activities  ActivityLog[]
+  analytics   AnalyticsSnapshot[]
+  aiTrainingData AIResponseTraining[]
   
   @@map("businesses")
 }

@@ -10,9 +10,9 @@ RevuGenie is a comprehensive SaaS platform that automates customer review manage
 - **Authentication**: NextAuth.js with JWT + OAuth
 - **Payments**: Stripe (test + production)
 - **Cache & Queue**: Redis
-- **Storage**: Supabase/AWS S3
+- **Storage**: ImageKit
 - **Notifications**: Twilio (WhatsApp), Nodemailer (Email)
-- **AI**: OpenAI API for response generation and sentiment analysis
+- **AI**: Custom/Open-Source Model (currently mocked)
 
 ## Features
 
@@ -81,7 +81,12 @@ revugenie/
 ### Environment Variables
 ```env
 # Database
-DATABASE_URL="postgresql://..."
+DB_USER="avnadmin"
+DB_PASSWORD="<PASSWORD>"
+DB_HOST="<HOST>"
+DB_PORT="<PORT>"
+DB_NAME="revuGenie"
+DB_SSL_CA="<SSL_CA>"
 
 # Authentication
 NEXTAUTH_SECRET="your-secret"
