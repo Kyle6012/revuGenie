@@ -5,7 +5,8 @@ const prisma = new PrismaClient();
 
 async function globalSetup() {
   // Stop any lingering containers
-  execSync('sudo docker compose down -v --rmi local');
+  execSync('sudo docker kill revugenie-db-test || true');
+  execSync('sudo docker compose down -v --rmi local --remove-orphans');
 
   // Start the test database container
   execSync('sudo docker compose up -d db-test');
