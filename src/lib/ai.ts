@@ -87,7 +87,10 @@ export class AIService {
       model: 'togethercomputer/llama-2-7b-chat',
       messages: [{ role: 'user', content: this.createPrompt(options) }],
     });
-    return response.choices[0].message.content.trim();
+    if (response.choices && response.choices[0] && response.choices[0].message && response.choices[0].message.content) {
+      return response.choices[0].message.content.trim();
+    }
+    return '';
   }
 
   private createPrompt(options: AIResponseOptions): string {

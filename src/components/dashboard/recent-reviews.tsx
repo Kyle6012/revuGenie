@@ -96,7 +96,7 @@ export function RecentReviews() {
                     
                     <div className="flex items-center gap-2">
                       <Badge 
-                        variant={review.status === 'responded' ? 'default' : 'secondary'}
+                        variant={review.status === 'responded' ? 'solid' : 'soft'}
                         className="text-xs"
                       >
                         {review.status === 'responded' ? 'Responded' : 'Pending'}

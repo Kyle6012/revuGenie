@@ -21,6 +21,7 @@ import {
 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { FileUpload } from '@/components/ui/file-upload'
+import { Badge } from '@/components/ui/badge'
 
 export default function SettingsPage() {
   const { toast } = useToast()
@@ -34,13 +35,11 @@ export default function SettingsPage() {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000))
       
-      toast({
-        title: 'Settings Updated',
+      toast('Settings Updated', {
         description: `${section} settings have been saved successfully.`,
       })
     } catch (error) {
-      toast({
-        title: 'Error',
+      toast('Error', {
         description: 'Failed to save settings.',
         variant: 'destructive'
       })
@@ -82,7 +81,7 @@ export default function SettingsPage() {
                   endpoint="businessLogo"
                   value={logoUrl}
                   onChange={(url) => {
-                    setLogoUrl(url);
+                    setLogoUrl(url || '');
                   }}
                 />
               </div>
@@ -480,7 +479,7 @@ export default function SettingsPage() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge variant="secondary">Manager</Badge>
+                    <Badge variant="soft">Manager</Badge>
                     <Button size="sm" variant="ghost">
                       Edit
                     </Button>

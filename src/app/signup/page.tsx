@@ -10,7 +10,8 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Loader2, Mail, Lock, User, Building, Google, Github } from 'lucide-react'
+import { Loader2, Mail, Lock, User, Building, Github } from 'lucide-react'
+import { FcGoogle } from 'react-icons/fc'
 
 export default function SignupPage() {
   const router = useRouter()
@@ -104,7 +105,7 @@ export default function SignupPage() {
           
           <CardContent className="space-y-6">
             {error && (
-              <Alert variant="destructive">
+              <Alert variant="soft" color="red">
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
@@ -219,7 +220,7 @@ export default function SignupPage() {
                 onClick={handleGoogleSignIn}
                 disabled={loading}
               >
-                <Google className="mr-2 h-4 w-4" />
+                <FcGoogle className="mr-2 h-4 w-4" />
                 Google
               </Button>
               

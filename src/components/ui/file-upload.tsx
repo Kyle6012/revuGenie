@@ -18,8 +18,9 @@ export const FileUpload = ({ onChange, value, endpoint }: FileUploadProps) => {
     setIsUploading(true);
     const file = acceptedFiles[0];
     try {
+      const fileBuffer = await file.arrayBuffer();
       const response = await imagekit.upload({
-        file: file,
+        file: Buffer.from(fileBuffer),
         fileName: file.name,
         folder: endpoint,
       });

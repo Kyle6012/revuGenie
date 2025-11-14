@@ -79,7 +79,7 @@ export default function LoginPage() {
           
           <CardContent className="space-y-6">
             {error && (
-              <Alert variant="destructive">
+              <Alert variant="soft" color="red">
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
