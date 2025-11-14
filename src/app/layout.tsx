@@ -3,6 +3,7 @@ import { Inter, Urbanist } from 'next/font/google'
 import { ThemeProvider } from '@/components/theme-provider'
 import { Toaster } from '@/components/ui/toaster'
 import { AuthProvider } from '@/components/auth-provider'
+import '@radix-ui/themes/styles.css'
 import './globals.css'
 
 const inter = Inter({ 

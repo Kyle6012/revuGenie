@@ -1,21 +1,21 @@
-import { HeroSection } from '@/components/landing/hero-section'
-import { FeaturesSection } from '@/components/landing/features-section'
-import { HowItWorksSection } from '@/components/landing/how-it-works-section'
-import { PricingSection } from '@/components/landing/pricing-section'
-import { TestimonialsSection } from '@/components/landing/testimonials-section'
-import { CtaSection } from '@/components/landing/cta-section'
-import { Footer } from '@/components/landing/footer'
+'use client'
+
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 export default function HomePage() {
+  const router = useRouter()
+
+  useEffect(() => {
+    router.push('/dashboard')
+  }, [router])
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
-      <HeroSection />
-      <FeaturesSection />
-      <HowItWorksSection />
-      <PricingSection />
-      <TestimonialsSection />
-      <CtaSection />
-      <Footer />
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-teal-50">
+      <div className="text-center">
+        <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+        <p className="text-gray-600">Redirecting to dashboard...</p>
+      </div>
     </div>
   )
 }
