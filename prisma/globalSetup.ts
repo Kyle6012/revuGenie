@@ -4,6 +4,9 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function globalSetup() {
+  // Forcefully free the port
+  execSync('sudo lsof -t -i:5433 | xargs -r sudo kill -9 || true');
+
   // Stop any lingering containers
   execSync('sudo docker kill revugenie-db-test || true');
   execSync('sudo docker compose down -v --rmi local --remove-orphans');
