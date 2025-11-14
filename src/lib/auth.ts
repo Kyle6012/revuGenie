@@ -72,9 +72,9 @@ export const authOptions: NextAuthOptions = {
       }
       
       if (account) {
-        token.accessToken = account.access_token
-        token.refreshToken = account.refresh_token
-        token.provider = account.provider
+        token.accessToken = account.access_token ?? ''
+        token.refreshToken = account.refresh_token ?? ''
+        token.provider = account.provider ?? ''
       }
       
       return token

@@ -42,10 +42,7 @@ export class GoogleBusinessService {
     try {
       const auth = await this.getAuthenticatedClient(userId)
       
-      const myBusiness = google.mybusiness({
-        version: 'v4',
-        auth
-      })
+      const myBusiness = new google.mybusinessreviews_v1.Mybusinessreviews({ auth })
 
       const reviewsResponse = await myBusiness.accounts.locations.reviews.list({
         parent: locationId,
@@ -66,13 +63,12 @@ export class GoogleBusinessService {
     try {
       const auth = await this.getAuthenticatedClient(userId)
       
-      const myBusiness = google.mybusiness({
-        version: 'v4',
-        auth
-      })
+      const myBusiness = new google.mybusinessbusinessinformation_v1.Mybusinessbusinessinformation({ auth })
 
       // Get accounts
-      const accountsResponse = await myBusiness.accounts.list()
+      const accountsResponse = await myBusiness.accounts.list({
+        pageSize: 50
+      })
       const accounts = accountsResponse.data.accounts || []
 
       const locations = []
@@ -107,10 +103,7 @@ export class GoogleBusinessService {
     try {
       const auth = await this.getAuthenticatedClient(userId)
       
-      const myBusiness = google.mybusiness({
-        version: 'v4',
-        auth
-      })
+      const myBusiness = new google.mybusinessreviews_v1.Mybusinessreviews({ auth })
 
       await myBusiness.accounts.locations.reviews.updateReply({
         name: `${locationId}/reviews/${reviewId}`,
@@ -157,12 +150,12 @@ export class GoogleBusinessService {
             businessId,
             platform: 'GOOGLE',
             reviewId: googleReview.reviewId,
-            authorName: googleReview.authorName,
-            authorPhoto: googleReview.authorPhotoUrl,
+            authorName: googleReview.reviewer?.displayName,
+            authorPhoto: googleReview.reviewer?.profilePhotoUrl,
             rating: googleReview.starRating,
-            title: googleReview.reviewHeader || '',
+            title: '',
             content: googleReview.comment || '',
-            reviewUrl: googleReview.reviewUrl,
+            reviewUrl: `https://search.google.com/local/reviews?placeid=${locationId}&q=reviews&review=${googleReview.reviewId}`,
             publishedAt: new Date(googleReview.createTime),
             status: googleReview.reviewReply ? 'RESPONDED' : 'PENDING',
             response: googleReview.reviewReply?.comment || '',

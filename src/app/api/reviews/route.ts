@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { aiService } from '@/lib/ai'
+import { Sentiment } from '@prisma/client'
 
 export async function GET(request: NextRequest) {
   try {
@@ -121,7 +122,7 @@ export async function POST(request: NextRequest) {
         content,
         reviewUrl,
         publishedAt: new Date(publishedAt),
-        sentiment: sentimentAnalysis.sentiment,
+        sentiment: sentimentAnalysis.sentiment.toUpperCase() as Sentiment,
         keywords: sentimentAnalysis.keywords,
         category: sentimentAnalysis.category,
         status: 'PENDING'

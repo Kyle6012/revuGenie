@@ -127,8 +127,7 @@ export default function BillingPage() {
       const stripe = (window as any).Stripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
       await stripe.redirectToCheckout({ sessionId })
     } catch (error) {
-      toast({
-        title: 'Error',
+      toast('Error', {
         description: 'Failed to create checkout session',
         variant: 'destructive'
       })

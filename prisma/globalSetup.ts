@@ -4,6 +4,9 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function globalSetup() {
+  // Stop any lingering containers
+  execSync('sudo docker compose down -v --rmi local');
+
   // Start the test database container
   execSync('sudo docker compose up -d db-test');
 
