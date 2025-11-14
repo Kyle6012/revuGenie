@@ -8,7 +8,7 @@ async function globalSetup() {
   execSync('sudo lsof -t -i:5433 | xargs -r sudo kill -9 || true');
 
   // Stop any lingering containers
-  execSync('sudo docker kill revugenie-db-test || true');
+  execSync('if [ $(sudo docker ps -q -f name=revugenie-db-test) ]; then sudo docker kill revugenie-db-test; fi');
   execSync('sudo docker compose down -v --rmi local --remove-orphans');
 
   // Start the test database container
